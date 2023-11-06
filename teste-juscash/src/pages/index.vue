@@ -7,7 +7,7 @@
 					<LeadFormComponent ref="LeadForm"></LeadFormComponent>
 				</CreateNewComponent>
 			</div>
-			<PropertySwitchDragableTableComponent :list="leadCollection"></PropertySwitchDragableTableComponent>
+			<PropertySwitchDragableTableComponent :getter="getLeadsByStatus"></PropertySwitchDragableTableComponent>
 		</div>
 		<div class="grow"></div>
 		<FooterComponent></FooterComponent>
@@ -21,8 +21,7 @@ import { LeadController } from './../controllers/lead';
 export default defineComponent({
 	data() {
     return {
-      post: [],
-			leadCollection: {}
+      post: []
     }
   },
   methods: {
@@ -33,9 +32,6 @@ export default defineComponent({
 		submitForm() {
 			this.$refs.LeadForm.submitForm()
 		}
-  },
-  mounted() {
-    this.leadCollection = this.getLeadsByStatus()
   }
 });
 </script>

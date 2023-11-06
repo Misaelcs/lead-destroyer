@@ -3,14 +3,16 @@
     <div class="w-[10rem] grow border border-neutral-300 shadow-md" v-for="(obj, listIndex) in list" :key="listIndex">
       <h3 class="border-b border-neutral-300 py-1 px-2">{{ obj.statusName }}</h3>
       <draggable
-        class="py-1 px-2"
+        class="py-1 px-2 draggablePlace"
         :list="obj.itemsList"
         @change="log"
-        :itemKey="listIndex.toString()"
+        itemKey="id"
+        group="listed"
       >
         <template #item="{ element, index }">
           <div class="bg-slate-700 text-slate-50 rounded-md px-2 py-1 my-[4px] cursor-pointer" @click="openUpdateModal(index)">{{ element.name }}</div>
         </template>
+        
       </draggable>
     </div>
   </div>
@@ -25,8 +27,13 @@ export default defineComponent({
     draggable
   },
   props: {
-    list: {
-      type: Object
+    getter: {
+      type: Function
+    }
+  },
+  data() {
+    return {
+      list: this.getter() || []
     }
   },
   methods: {
@@ -40,3 +47,9 @@ export default defineComponent({
 });
 
 </script>
+
+<style lang="scss" scoped>
+.draggablePlace{
+  min-height: 100px;
+}
+</style>

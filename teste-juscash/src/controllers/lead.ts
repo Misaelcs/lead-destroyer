@@ -103,7 +103,7 @@ export class LeadController extends APIClient{
     for(const status in this.statusList) {
       outputArray.push({ statusName: this.statusList[status], itemsList: [] });
     }
-
+    
     return outputArray;
   }
 }
