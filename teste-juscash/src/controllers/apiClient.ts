@@ -8,19 +8,19 @@ export class APIClient {
 
   constructor(urlPrefix: string) {
     this.urlPrefix = urlPrefix;
-    this.isLocalOnly = !!import.meta.env.RUN_FRONTEND_ALONE
+    this.isLocalOnly = import.meta.env.VITE_RUN_FRONTEND_ALONE === '1'
 
     if(this.isLocalOnly)
-      this.localObject = JSON.parse(localStorage.getItem(urlPrefix) ?? '');
+      this.localObject = JSON.parse(localStorage.getItem(urlPrefix) ?? '[]');
 
   }
 
   get<T>(id: number = -1, config?: AxiosRequestConfig): Object{
     let response;
     
-    if(this.isLocalOnly)
-      response = {data:  id !== -1 ? this.localObject[id] : this.localObject }
-    else {
+    if(this.isLocalOnly) {
+      response = id !== -1 ? this.localObject[id] : this.localObject
+    } else {
       api.get<T>(this.urlPrefix+(id !== -1 ? '/'+id : ''), config).then(data => {
         response = data
       });
@@ -30,23 +30,30 @@ export class APIClient {
   }
 
   post<T>(data: any, config?: AxiosRequestConfig): void {
-    if(this.isLocalOnly)
-      this.localObject.push(data);
-    else
+    if(this.isLocalOnly) {
+      this.localObject[this.localObject.length || 0] = data;
+      this.consolidateLocalStorageData();
+    } else
       api.post<T>(this.urlPrefix, data, config);    
   }
 
   put<T>(id: number, data: any, config?: AxiosRequestConfig): void {
-    if(this.localObject)
+    if(this.isLocalOnly) {
       this.localObject[id] = data;
-    else
+      this.consolidateLocalStorageData;
+    } else
       api.put<T>(this.urlPrefix+'/'+id, data, config);
   }
 
   delete<T>(id: number, config?: AxiosRequestConfig): void {
-    if(this.isLocalOnly)
+    if(this.isLocalOnly) {
       delete this.localObject[id];
-    else
+      this.consolidateLocalStorageData;
+    } else
       api.delete<T>(this.urlPrefix+'/'+id, config);
+  }
+
+  consolidateLocalStorageData() {
+    localStorage.setItem(this.urlPrefix, JSON.stringify(this.localObject));
   }
 }

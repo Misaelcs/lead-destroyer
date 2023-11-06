@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="submitForm">
-    <div>
+    <div v-if="$route.name == 'Cadastrar'">
       <label for="name">Seu nome completo:</label>
       <input v-model="formData.name" type="text" id="name" required />
     </div>
@@ -15,7 +15,7 @@
       <input v-model="formData.password" type="password" id="password" required />
     </div>
 
-    <div>
+    <div v-if="$route.name == 'Cadastrar'">
       <label for="passwordConfirmation">Confirme sua senha:</label>
       <input v-model="formData.passwordConfirmation" type="password" id="passwordConfirmation" required />
     </div>

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const api: AxiosInstance = axios.create({
-  baseURL: import.meta.env.API_BASEPATH ?? 'localhost',
+  baseURL: import.meta.env.VITE_API_BASEPATH ?? 'localhost',
 });
 
 api.interceptors.request.use(

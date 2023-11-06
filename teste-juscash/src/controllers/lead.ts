@@ -1,6 +1,6 @@
 import { APIClient } from './apiClient';
 
-interface Lead {
+export interface Lead {
   id?: number;
   name: string;
   email: string;
@@ -14,15 +14,17 @@ interface Lead {
   updated_at: Date;
 }
 
-interface LeadCollection {
+export interface LeadCollection {
   leads: Lead[];
 }
 
-class LeadController extends APIClient{
-  private api: any;
-  private leads: Lead[] = [];
-  private idCounter: number = 1;
+export interface LeadCollectionByStatus {
+  statusName: string;
+  itemsList: Lead[];
+}
 
+export class LeadController extends APIClient{
+  private statusList = ['Cliente em Potencial', 'Dados Confirmados', 'Análise do Lead'];
   constructor() {
     super('lead');
 
@@ -34,12 +36,15 @@ class LeadController extends APIClient{
 
   read(id: number = -1): Object | LeadCollection {
     const rawLead = super.get(id);
-    let result;
 
     if(rawLead as LeadCollection)
       return rawLead as LeadCollection
     else
       throw Error("The data retrieved doesn't match a Lead Collection type");
+  }
+
+  validateLeadList(rawLead: any): Lead[] {
+    return rawLead;
   }
 
   validateLead(rawLead: any): Lead {
@@ -60,7 +65,7 @@ class LeadController extends APIClient{
 
   create(rawLead: Object): void {
     const newLead = this.validateLead(rawLead);
-
+    newLead.status = 'Cliente em Potencial';
     super.post(newLead);
   }
 
@@ -69,6 +74,36 @@ class LeadController extends APIClient{
 
     super.put(newLead.id ?? -1, newLead);
   }
-}
 
-export default LeadController;
+  getLeadsByStatus() {
+    const leadList = super.get();
+
+    return this.groupByStatus(this.validateLeadList(leadList));
+  }
+
+  groupByStatus(inputArray: Lead[]): LeadCollectionByStatus[] {
+    const statusMap = new Map<string, Lead[]>();
+
+    for (const item of inputArray) {
+      const status = item.status ?? '';
+      if (!statusMap.has(status)) {
+        statusMap.set(status, []);
+      }
+      statusMap.get(status)?.push(item);
+    }
+
+    const outputArray: LeadCollectionByStatus[] = [];
+    statusMap.forEach((items, statusName) => {
+      outputArray.push({ statusName, itemsList: items });
+      if(this.statusList.includes(statusName)){
+        this.statusList.splice(this.statusList.indexOf(statusName), 1);
+      }
+    });
+
+    for(const status in this.statusList) {
+      outputArray.push({ statusName: this.statusList[status], itemsList: [] });
+    }
+
+    return outputArray;
+  }
+}

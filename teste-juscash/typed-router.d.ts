@@ -29,8 +29,10 @@ import type {
 
 declare module '@vue-router/routes' {
   export interface RouteNamedMap {
-    'login': RouteRecordInfo<'login', '/', Record<never, never>, Record<never, never>>,
+    'Inicio': RouteRecordInfo<'Inicio', '/', Record<never, never>, Record<never, never>>,
     'not-found': RouteRecordInfo<'not-found', '/:all(.*)', { all: ParamValue<true> }, { all: ParamValue<false> }>,
+    'Cadastrar': RouteRecordInfo<'Cadastrar', '/cadastrar', Record<never, never>, Record<never, never>>,
+    'Login': RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>,
     'other-page': RouteRecordInfo<'other-page', '/other-page', Record<never, never>, Record<never, never>>,
   }
 }
