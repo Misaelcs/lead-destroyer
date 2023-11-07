@@ -27,7 +27,6 @@ export class LeadController extends APIClient{
   private statusList = ['Cliente em Potencial', 'Dados Confirmados', 'Análise do Lead'];
   constructor() {
     super('lead');
-
   }
 
   private validateTelephone(telephone: string): boolean {
@@ -50,29 +49,44 @@ export class LeadController extends APIClient{
   validateLead(rawLead: any): Lead {
     this.validateTelephone(rawLead.telephone);
 
-    return {
-      name: rawLead.name,
-      email: rawLead.email,
-      telephone: rawLead.telephone,
-      flHonSucumbenciais: rawLead.flHonSucumbenciais,
-      flHonContratuais: rawLead.flHonContratuais,
-      flHonDativos: rawLead.flHonDativos,
-      flCreditoAutor: rawLead.flCreditoAutor,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+    if(rawLead.id) {
+      return {
+        id: rawLead.id,
+        name: rawLead.name,
+        email: rawLead.email,
+        telephone: rawLead.telephone,
+        flHonSucumbenciais: rawLead.flHonSucumbenciais,
+        flHonContratuais: rawLead.flHonContratuais,
+        flHonDativos: rawLead.flHonDativos,
+        flCreditoAutor: rawLead.flCreditoAutor,
+        status: rawLead.status,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    } else {
+      return {
+        name: rawLead.name,
+        email: rawLead.email,
+        telephone: rawLead.telephone,
+        flHonSucumbenciais: rawLead.flHonSucumbenciais,
+        flHonContratuais: rawLead.flHonContratuais,
+        flHonDativos: rawLead.flHonDativos,
+        flCreditoAutor: rawLead.flCreditoAutor,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+    }
   }
 
   create(rawLead: Object): void {
     const newLead = this.validateLead(rawLead);
-    newLead.status = 'Cliente em Potencial';
     super.post(newLead);
   }
 
   update(rawLead: Object): void {
     const newLead = this.validateLead(rawLead);
-
     super.put(newLead.id ?? -1, newLead);
+    console.log(this.getLeadsByStatus())
   }
 
   getLeadsByStatus() {
@@ -105,5 +119,15 @@ export class LeadController extends APIClient{
     }
     
     return outputArray;
+  }
+
+  updateLeadsStatus(list: any) {
+    let arrLeads = this.get();
+
+    list.forEach(group => {
+      for(const i in group) {
+        console.log(group[i])
+      }
+    });
   }
 }

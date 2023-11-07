@@ -15,7 +15,7 @@
       <input v-model="formData.telephone" type="text" name="telephone" required />
     </div>
 
-    <div>
+    <div class="checkboxContainer">
       <div>
         <label for="checkAll">Todos</label>
         <input type="checkbox" id="checkAll" required />
@@ -52,35 +52,56 @@ export default {
   data() {
     return {
       formData: {
+        id: -1,
         name: '',
         email: '',
         telephone: '',
         flHonSucumbenciais: false,
         flHonContratuais: false,
         flHonDativos: false,
-        flCreditoAutor: false
+        flCreditoAutor: false,
+        status: 'Cliente em Potencial'
       },
     };
   },
   methods: {
     submitForm() {
-      if (this.validateForm()) {
+      try {
+        this.$emit('startSubmit')
+        this.checkIfEmailIsValid(this.formData.email.toString())
         const lead = new LeadController();
-        lead.create(this.formData)
+        
+        if (this.formData.id !== -1)
+          lead.update(this.formData)
+        else
+          lead.create(this.formData)
+
+      } catch (error: any) {
+        this.$emit('endSubmit')
+        Swal.fire(error.message);
+      } finally {
+        this.$emit('endSubmit')
       }
     },
-    validateForm() {
-      if (!this.isEmailValid(this.formData.email.toString())) {
-        Swal.fire('O email informado é inválido!');
-        return false;
-      }
-  
-      return true;
-    },
-    isEmailValid(email: string): Boolean {
+    checkIfEmailIsValid(email: string) {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailPattern.test(email);
+      if (!emailPattern.test(email)) throw new Error("O email informado é inválido!");
     },
+    setDataForUpdate(args: any) {
+      this.formData = {
+        id: args.id,
+        name: args.el.name,
+        email: args.el.email,
+        telephone: args.el.telephone,
+        flHonSucumbenciais: args.el.flHonSucumbenciais,
+        flHonContratuais: args.el.flHonContratuais,
+        flHonDativos: args.el.flHonDativos,
+        flCreditoAutor: args.el.flCreditoAutor,
+        status: args.el.status
+      };
+    }
   },
+  created() {
+  }
 };
 </script>

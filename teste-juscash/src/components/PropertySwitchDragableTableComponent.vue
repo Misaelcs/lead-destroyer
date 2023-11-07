@@ -4,13 +4,14 @@
       <h3 class="border-b border-neutral-300 py-1 px-2">{{ obj.statusName }}</h3>
       <draggable
         class="py-1 px-2 draggablePlace"
-        :list="obj.itemsList"
-        @change="log"
-        itemKey="id"
+        v-model="obj.itemsList"
+        :itemKey="obj.statusName"
         group="listed"
+        @change="change"
+        v-if="showDraggable"
       >
         <template #item="{ element, index }">
-          <div class="bg-slate-700 text-slate-50 rounded-md px-2 py-1 my-[4px] cursor-pointer" @click="openUpdateModal(index)">{{ element.name }}</div>
+          <div class="bg-slate-700 text-slate-50 rounded-md px-2 py-1 my-[4px] cursor-pointer" @click="$emit('clickOn', {id: index, el:element})">{{ element.name }}</div>
         </template>
         
       </draggable>
@@ -28,21 +29,24 @@ export default defineComponent({
   },
   props: {
     getter: {
-      type: Function
+      type: Function,
+      required: true
     }
   },
   data() {
     return {
-      list: this.getter() || []
+      list: this.getter() || [],
+      showDraggable: true
     }
   },
   methods: {
-    log: function(evt: any) {
-      window.console.log(evt);
+    updateComponent: function() {
+      this.list = this.getter();
     },
-		openUpdateModal: function(index: any) {
-			console.log(index);
-		}
+    change: function(evt: any) {
+      if (evt.added) 
+        this.$emit('changed', this.$data.list)
+    }
   }
 });
 

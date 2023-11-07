@@ -2,12 +2,10 @@
 	<div class="min-h-screen flex flex-col">
 		<HeaderComponent></HeaderComponent>
 		<div class="px-[16rem]">
-			<div class="float-right">
-				<CreateNewComponent display-name="+ Novo Lead" @submit-form="submitForm()">
-					<LeadFormComponent ref="LeadForm"></LeadFormComponent>
-				</CreateNewComponent>
-			</div>
-			<PropertySwitchDragableTableComponent :getter="getLeadsByStatus"></PropertySwitchDragableTableComponent>
+			<CreateNewComponent ref="CreateNew" display-name="+ Novo Lead" @submit-form="submitForm()" @close-modal="$refs.Table.updateComponent()">
+				<LeadFormComponent ref="LeadForm"></LeadFormComponent>
+			</CreateNewComponent>
+			<PropertySwitchDragableTableComponent ref="Table" @click-on="openModalForUpdate" @changed="changeStatus" :getter="getLeadsByStatus" ></PropertySwitchDragableTableComponent>
 		</div>
 		<div class="grow"></div>
 		<FooterComponent></FooterComponent>
@@ -21,7 +19,8 @@ import { LeadController } from './../controllers/lead';
 export default defineComponent({
 	data() {
     return {
-      post: []
+      post: [],
+			clickOnLead: false
     }
   },
   methods: {
@@ -31,6 +30,16 @@ export default defineComponent({
     },
 		submitForm() {
 			this.$refs.LeadForm.submitForm()
+		},
+    openModalForUpdate: function(arg: any) {
+			this.$refs.CreateNew.openModalForUpdate()
+			setTimeout(() => {
+				this.$refs.LeadForm.setDataForUpdate(arg)
+			}, 200);
+    },
+		changeStatus(list: any) {
+			const lead = new LeadController();
+			return lead.updateLeadsStatus(list);
 		}
   }
 });

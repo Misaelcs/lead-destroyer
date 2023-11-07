@@ -40,7 +40,6 @@ export class APIClient {
   put<T>(id: number, data: any, config?: AxiosRequestConfig): void {
     if(this.isLocalOnly) {
       this.localObject[id] = data;
-      this.consolidateLocalStorageData;
     } else
       api.put<T>(this.urlPrefix+'/'+id, data, config);
   }
@@ -48,7 +47,7 @@ export class APIClient {
   delete<T>(id: number, config?: AxiosRequestConfig): void {
     if(this.isLocalOnly) {
       delete this.localObject[id];
-      this.consolidateLocalStorageData;
+      this.consolidateLocalStorageData();
     } else
       api.delete<T>(this.urlPrefix+'/'+id, config);
   }
