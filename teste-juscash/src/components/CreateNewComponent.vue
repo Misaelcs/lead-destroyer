@@ -11,6 +11,7 @@
                 :kind="modalType" 
                 @submit-form="$emit('submitForm')"
                 @close-modal="showModal = false; $emit('closeModal')"
+                @enter-edit="$emit('enterEdit')"
             >
                 <slot></slot>
             </ModalComponent>

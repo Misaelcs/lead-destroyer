@@ -14,8 +14,8 @@
 			<div>{{ footerText }}</div>
 			<div class="flex gap-[10px]">
 				<button class="py-[3px] px-[1rem] text-white rounded-md bg-red-600" v-if="modalKind == 'edit'" @click="$emit('closeModal')">Cancelar</button>
-				<button class="py-[3px] px-[1rem] text-white rounded-md bg-sky-600" v-if="modalKind == 'edit'" @click="$emit('submitForm'); graciousCloseItself()">Editar</button>
-				<button class="py-[3px] px-[1rem] text-white rounded-md bg-green-600" v-if="modalKind != 'edit'" @click="$emit('submitForm'); graciousCloseItself()">Salvar</button>
+				<button class="py-[3px] px-[1rem] text-white rounded-md bg-sky-600" v-if="modalKind == 'edit' && disabled" @click="$emit('enterEdit'); disabled = false">Editar</button>
+				<button class="py-[3px] px-[1rem] text-white rounded-md bg-green-600" v-if="modalKind != 'edit' || !disabled" @click="$emit('submitForm'); graciousCloseItself()">Salvar</button>
 			</div>
 		</div>
 	</div>
@@ -38,7 +38,8 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			modalKind: this.kind as String
+			modalKind: this.kind as String,
+			disabled: true,
 		}
 	},
 	methods: {
@@ -69,6 +70,10 @@ export default defineComponent({
       color: grey;
 			transition: all ease-in-out 0.2s;
     }
+
+		input:disabled {
+			background-color: #a1a1a146;
+		}
 
 		input:active, input:focus {
 			border: none;

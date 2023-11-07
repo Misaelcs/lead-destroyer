@@ -3,15 +3,15 @@
 </script>
 
 <template>
-	<div class="w-full h-screen flex items-center justify-center">
-		<div class="flex flex-col bg-neutral-50 w-[32rem] rounded-xl border-neutral-400 border-2 shadow-lg">
+	<div class="w-full h-screen flex items-center justify-center transition-all bg-neutral-200">
+		<div class="flex flex-col bg-neutral-50 w-[32rem] rounded-xl border-neutral-100 border-2 shadow-lg shadow-neutral-400 mt-[-8rem]">
 			<div class="py-[2rem]">
 				<img :src="JusCashLogo" width="300" class="mx-auto" />
 			</div>
 			<div class="grow px-[2rem]" id="loginModalForm">
 				<slot></slot>
 			</div>
-			<div v-if="$route.name == 'Login'" class="flex justify-end pr-[2rem]">
+			<div v-if="$route.name == 'Login'" class="flex h-[2rem] mt-6 items-center justify-end pr-[2rem]">
 				<router-link
 				:to="{ name: 'Cadastrar' }"
 				class="
@@ -22,7 +22,7 @@
 				>Ainda não possui uma conta? Cadastre-se.</router-link
 			>
 			</div>
-			<div v-else class="flex justify-end pr-[2rem]">
+			<div v-else class="flex h-[2rem] mt-6 items-center justify-end pr-[2rem]">
 				<router-link
 				:to="{ name: 'Login' }"
 				class="
@@ -34,8 +34,8 @@
 			>
 			</div>
 			<div class="flex justify-center pb-[2rem] pt-[1.2rem]">
-				<button v-if="$route.name == 'Login'" onclick="" class="w-40 h-10 p-0 text-2xl rounded-lg bg-cyan-700 text-white font-light">Entrar</button>
-				<button v-else onclick="" class="w-40 h-10 p-0 text-2xl rounded-lg bg-green-700 text-white font-light">Criar Conta</button>
+				<button v-if="$route.name == 'Login'" @click="$emit('submit')" class="w-40 h-10 p-0 text-2xl rounded-lg bg-cyan-700 text-white font-light">Entrar</button>
+				<button v-else @click="$emit('submit')" class="w-40 h-10 p-0 text-2xl rounded-lg bg-green-700 text-white font-light">Criar Conta</button>
 			</div>
 		</div>
 	</div>

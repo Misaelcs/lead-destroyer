@@ -24,7 +24,7 @@ export interface LeadCollectionByStatus {
 }
 
 export class LeadController extends APIClient{
-  private statusList = ['Cliente em Potencial', 'Dados Confirmados', 'Análise do Lead'];
+  private statusList = {"Cliente em Potencial": 0, "Dados Confirmados": 1, "Análise do Lead": 2};
   constructor() {
     super('lead');
   }
@@ -48,8 +48,7 @@ export class LeadController extends APIClient{
 
   validateLead(rawLead: any): Lead {
     this.validateTelephone(rawLead.telephone);
-
-    if(rawLead.id) {
+    if(typeof rawLead.id == 'number') {
       return {
         id: rawLead.id,
         name: rawLead.name,
@@ -65,6 +64,7 @@ export class LeadController extends APIClient{
       };
     } else {
       return {
+        id: this.getCount(),
         name: rawLead.name,
         email: rawLead.email,
         telephone: rawLead.telephone,
@@ -72,6 +72,7 @@ export class LeadController extends APIClient{
         flHonContratuais: rawLead.flHonContratuais,
         flHonDativos: rawLead.flHonDativos,
         flCreditoAutor: rawLead.flCreditoAutor,
+        status: 'Cliente em Potencial',
         created_at: new Date(),
         updated_at: new Date(),
       };
@@ -86,7 +87,6 @@ export class LeadController extends APIClient{
   update(rawLead: Object): void {
     const newLead = this.validateLead(rawLead);
     super.put(newLead.id ?? -1, newLead);
-    console.log(this.getLeadsByStatus())
   }
 
   getLeadsByStatus() {
@@ -97,6 +97,7 @@ export class LeadController extends APIClient{
 
   groupByStatus(inputArray: Lead[]): LeadCollectionByStatus[] {
     const statusMap = new Map<string, Lead[]>();
+    const outputArray: LeadCollectionByStatus[] = [];
 
     for (const item of inputArray) {
       const status = item.status ?? '';
@@ -106,28 +107,31 @@ export class LeadController extends APIClient{
       statusMap.get(status)?.push(item);
     }
 
-    const outputArray: LeadCollectionByStatus[] = [];
+    for(const statusNameIndex in this.statusList) {
+      outputArray[this.statusList[statusNameIndex]] = { statusName: statusNameIndex, itemsList: [] };
+    }
+
     statusMap.forEach((items, statusName) => {
-      outputArray.push({ statusName, itemsList: items });
-      if(this.statusList.includes(statusName)){
-        this.statusList.splice(this.statusList.indexOf(statusName), 1);
-      }
+      outputArray[this.statusList[statusName]].itemsList = items;
     });
 
-    for(const status in this.statusList) {
-      outputArray.push({ statusName: this.statusList[status], itemsList: [] });
-    }
     
     return outputArray;
   }
 
   updateLeadsStatus(list: any) {
-    let arrLeads = this.get();
-
-    list.forEach(group => {
-      for(const i in group) {
-        console.log(group[i])
+    let newList = Object.entries(list);
+    for(const i in newList) {
+      const statusName = newList[i][1].statusName;
+      let itemsList = newList[i][1].itemsList
+      for(const index in itemsList) {
+        itemsList[index].status = statusName;
+        this.update(itemsList[index]);
       }
-    });
+    }
+  }
+
+  getCount() {
+    return this.get().length || 0;
   }
 }

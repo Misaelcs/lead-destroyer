@@ -2,43 +2,43 @@
   <form @submit.prevent="submitForm">
     <div>
       <label for="name">Nome Completo*</label>
-      <input v-model="formData.name" type="text" name="name" required />
+      <input v-model="formData.name" type="text" name="name" required :disabled="disabled"/>
     </div>
 
     <div>
       <label for="email">E-mail*</label>
-      <input v-model="formData.email" type="email" name="email" required />
+      <input v-model="formData.email" type="email" name="email" required :disabled="disabled"/>
     </div>
 
     <div>
       <label for="telephone">Telefone*</label>
-      <input v-model="formData.telephone" type="text" name="telephone" required />
+      <input v-model="formData.telephone" type="text" name="telephone" required :disabled="disabled"/>
     </div>
 
     <div class="checkboxContainer">
       <div>
         <label for="checkAll">Todos</label>
-        <input type="checkbox" id="checkAll" required />
+        <input type="checkbox" @click="switchCheckAll()" id="checkAll" required :disabled="disabled"/>
       </div>
 
       <div>
         <label for="flHonSucumbenciais">Honorários Sucumbenciais</label>
-        <input v-model="formData.flHonSucumbenciais" type="checkbox" name="flHonSucumbenciais" required />
+        <input v-model="formData.flHonSucumbenciais" type="checkbox" name="flHonSucumbenciais" id="flHonSucumbenciais" required :disabled="disabled"/>
       </div>
 
       <div>
         <label for="flHonContratuais">Honarários Contratuais</label>
-        <input v-model="formData.flHonContratuais" type="checkbox" name="flHonContratuais" required />
+        <input v-model="formData.flHonContratuais" type="checkbox" name="flHonContratuais" id="flHonContratuais" required :disabled="disabled"/>
       </div>
 
       <div>
         <label for="flHonDativos">Honorários Dativos</label>
-        <input v-model="formData.flHonDativos" type="checkbox" name="flHonDativos" required />
+        <input v-model="formData.flHonDativos" type="checkbox" name="flHonDativos" id="flHonDativos" required :disabled="disabled"/>
       </div>
 
       <div>
         <label for="flCreditoAutor">Crédito do Autor</label>
-        <input v-model="formData.flCreditoAutor" type="checkbox" name="flCreditoAutor" required />
+        <input v-model="formData.flCreditoAutor" type="checkbox" name="flCreditoAutor" id="flCreditoAutor" required :disabled="disabled"/>
       </div>
     </div>
   </form>
@@ -51,6 +51,8 @@ import Swal from 'sweetalert2';
 export default {
   data() {
     return {
+      disabled: false as boolean,
+      checkAll: false as boolean,
       formData: {
         id: -1,
         name: '',
@@ -73,8 +75,11 @@ export default {
         
         if (this.formData.id !== -1)
           lead.update(this.formData)
-        else
+        else {
+          // @ts-expect-error 
+          delete this.formData.id;
           lead.create(this.formData)
+        }
 
       } catch (error: any) {
         this.$emit('endSubmit')
@@ -99,9 +104,17 @@ export default {
         flCreditoAutor: args.el.flCreditoAutor,
         status: args.el.status
       };
+
+      this.disabled = true;
+    },
+    switchCheckAll() {
+      this.checkAll = !this.checkAll;
+
+      this.formData.flHonSucumbenciais = this.checkAll;
+      this.formData.flHonContratuais = this.checkAll;
+      this.formData.flHonDativos = this.checkAll;
+      this.formData.flCreditoAutor = this.checkAll;
     }
-  },
-  created() {
   }
 };
 </script>
